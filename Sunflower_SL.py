@@ -12,10 +12,12 @@ st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 st.title("🌻 Seed Growth Visualization")
 
-# ---- Hardcoded parameters
+# ---- Hardcoded Natural Parameters
 TOTAL_DAYS = 200
 SEED_GROWTH_RATE = 0.003
 BASE_RADIUS = 70
+SEEDS_PER_DAY = 15
+GOLDEN_ANGLE = 137.50776  # degrees
 
 # ---- Session State Init
 if "seeds" not in st.session_state:
@@ -24,13 +26,20 @@ if "day" not in st.session_state:
     st.session_state.day = 0
 if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
+if "angle" not in st.session_state:
+    st.session_state.angle = GOLDEN_ANGLE
 
 # ---- Sidebar Controls
 with st.sidebar:
     st.header("Controls")
 
-    seeds_per_day = st.slider("Seeds per Day", 1, 20, 15)
-    angle_deg = st.slider("Angle (°)", 5.0, 145.0, 137.5)
+    angle_deg = st.slider(
+        "Angle (°)",
+        5.0,
+        145.0,
+        st.session_state.angle
+    )
+    st.session_state.angle = angle_deg
 
     zoom_option = st.radio(
         "Zoom",
@@ -49,6 +58,7 @@ with st.sidebar:
             st.session_state.seeds = []
             st.session_state.day = 0
             st.session_state.autoplay = False
+            st.session_state.angle = GOLDEN_ANGLE
             st.rerun()
 
     with col2:
@@ -57,6 +67,17 @@ with st.sidebar:
 
     st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
 
+# ---- About Section
+st.markdown(
+    f"""
+    ### About  
+    Seeds grow using the **golden angle ({GOLDEN_ANGLE:.5f}°)** —  
+    a pattern found throughout nature.
+
+    Even a small change in this angle dramatically alters the structure.  
+    Try adjusting it and observe how the pattern transforms.
+    """
+)
 
 # ---- Simulation Logic
 def advance_day():
@@ -66,7 +87,7 @@ def advance_day():
     st.session_state.day += 1
 
     # Add new seeds
-    for _ in range(seeds_per_day):
+    for _ in range(SEEDS_PER_DAY):
         st.session_state.seeds.append([len(st.session_state.seeds) + 1, 0.0, 0])
 
     # Grow seeds
@@ -84,20 +105,20 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 if st.session_state.pop("step_once", False):
     step_now = True
 
-# 🔥 SPEED BOOST:
-# Advance multiple days per rerun during autoplay
+# Faster animation
 if step_now:
     steps_per_frame = 5 if st.session_state.autoplay else 1
     for _ in range(steps_per_frame):
         advance_day()
 
-
 # ---- Render Plot
 fig, ax = plt.subplots(figsize=(6, 6))
-fig.patch.set_facecolor("white")
-ax.set_facecolor("white")
 
-golden_angle = math.radians(angle_deg)
+# 🌟 Restore golden/yellow background
+fig.patch.set_facecolor("gold")
+ax.set_facecolor("gold")
+
+golden_angle_rad = math.radians(st.session_state.angle)
 radius = BASE_RADIUS / zoom
 
 ax.set_xlim(-radius, radius)
@@ -109,7 +130,7 @@ x, y = [], []
 colors = []
 
 for n, r, age in st.session_state.seeds:
-    theta = n * golden_angle
+    theta = n * golden_angle_rad
     xpos = r * math.cos(theta)
     ypos = r * math.sin(theta)
 
@@ -123,7 +144,7 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
-# ---- Faster Autoplay Loop
+# ---- Autoplay Loop
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    time.sleep(0.01)  # much faster than 0.05
+    time.sleep(0.01)
     st.rerun()
