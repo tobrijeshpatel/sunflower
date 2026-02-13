@@ -44,7 +44,7 @@ with st.sidebar:
     zoom_option = st.radio(
         "Zoom",
         options=["1x", "10x", "1200x"],
-        index=0  # default = 1x
+        index=0
     )
 
     zoom = {"1x": 1, "10x": 10, "1200x": 1200}[zoom_option]
@@ -65,11 +65,18 @@ with st.sidebar:
         if st.button("Next Day", use_container_width=True):
             st.session_state.step_once = True
 
-    st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
+    # 🔥 Play / Pause Button
+    if st.button("Play ▶" if not st.session_state.autoplay else "Pause ⏸", use_container_width=True):
+        st.session_state.autoplay = not st.session_state.autoplay
 
-# ---- Single-line Description (Professional & Clean)
+
+# ---- User Prompt
+if st.session_state.day == 0 and not st.session_state.autoplay:
+    st.info("Click **Play ▶** to start the simulation or use **Next Day** to step manually.")
+
+# ---- Description (Single Line)
 st.markdown(
-    f"Seeds grow using the golden angle ({GOLDEN_ANGLE:.5f}°), a pattern found throughout nature. "
+    f"Seeds grow using the golden angle ({GOLDEN_ANGLE:.1f}°), a pattern found throughout nature. "
     "Even a small change in this angle dramatically alters the structure — try adjusting it and observe how the pattern transforms."
 )
 
@@ -86,6 +93,7 @@ def advance_day():
     for i in range(len(st.session_state.seeds)):
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
+
 
 # ---- Determine stepping
 step_now = False
@@ -115,6 +123,24 @@ ax.set_ylim(-radius, radius)
 ax.set_aspect("equal")
 ax.axis("off")
 
+# ---- Corner Labels
+ax.text(
+    -radius * 0.95,
+    radius * 0.95,
+    f"Day {st.session_state.day}",
+    fontsize=12,
+    verticalalignment="top"
+)
+
+ax.text(
+    radius * 0.95,
+    radius * 0.95,
+    f"{st.session_state.angle:.1f}°",
+    fontsize=12,
+    horizontalalignment="right",
+    verticalalignment="top"
+)
+
 x, y = [], []
 colors = []
 
@@ -133,7 +159,4 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
-# ---- Faster Autoplay Loop
-if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    time.sleep(0.01)
-    st.rerun()
+# ---- Fas
