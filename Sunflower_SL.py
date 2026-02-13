@@ -63,16 +63,19 @@ with st.sidebar:
 
     with col2:
         if st.button("Next Day", use_container_width=True):
-            st.session_state.step_once = True
+            if st.session_state.day < TOTAL_DAYS:
+                st.session_state.day += 1
 
-    # 🔥 Play / Pause Button
+    # Play / Pause Button
     if st.button("Play ▶" if not st.session_state.autoplay else "Pause ⏸", use_container_width=True):
         st.session_state.autoplay = not st.session_state.autoplay
 
-
-# ---- User Prompt
+# ---- Smart Prompts
 if st.session_state.day == 0 and not st.session_state.autoplay:
-    st.info("Click **Play ▶** to start the simulation or use **Next Day** to step manually.")
+    st.info('Click "Play ▶" to start the simulation.')
+
+if st.session_state.day >= TOTAL_DAYS:
+    st.success('Simulation complete. Try changing the angle to see a new pattern.')
 
 # ---- Description (Single Line)
 st.markdown(
@@ -80,7 +83,7 @@ st.markdown(
     "Even a small change in this angle dramatically alters the structure — try adjusting it and observe how the pattern transforms."
 )
 
-# ---- Simulation Logic
+# ---- Simulation Step
 def advance_day():
     if st.session_state.day >= TOTAL_DAYS:
         return
@@ -94,20 +97,11 @@ def advance_day():
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
-
-# ---- Determine stepping
-step_now = False
-
+# ---- Autoplay (Smooth)
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    step_now = True
-
-if st.session_state.pop("step_once", False):
-    step_now = True
-
-if step_now:
-    steps_per_frame = 5 if st.session_state.autoplay else 1
-    for _ in range(steps_per_frame):
-        advance_day()
+    advance_day()
+    time.sleep(0.015)  # smoother pacing
+    st.rerun()
 
 # ---- Render Plot
 fig, ax = plt.subplots(figsize=(6, 6))
@@ -158,5 +152,3 @@ for n, r, age in st.session_state.seeds:
 ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
-
-# ---- Fas
