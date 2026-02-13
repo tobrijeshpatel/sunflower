@@ -44,7 +44,7 @@ with st.sidebar:
     zoom_option = st.radio(
         "Zoom",
         options=["1x", "10x", "1200x"],
-        index=0
+        index=0  # default = 1x
     )
 
     zoom = {"1x": 1, "10x": 10, "1200x": 1200}[zoom_option]
@@ -67,16 +67,10 @@ with st.sidebar:
 
     st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
 
-# ---- About Section
+# ---- Single-line Description (Professional & Clean)
 st.markdown(
-    f"""
-    ### About  
-    Seeds grow using the **golden angle ({GOLDEN_ANGLE:.5f}°)** —  
-    a pattern found throughout nature.
-
-    Even a small change in this angle dramatically alters the structure.  
-    Try adjusting it and observe how the pattern transforms.
-    """
+    f"Seeds grow using the golden angle ({GOLDEN_ANGLE:.5f}°), a pattern found throughout nature. "
+    "Even a small change in this angle dramatically alters the structure — try adjusting it and observe how the pattern transforms."
 )
 
 # ---- Simulation Logic
@@ -86,15 +80,12 @@ def advance_day():
 
     st.session_state.day += 1
 
-    # Add new seeds
     for _ in range(SEEDS_PER_DAY):
         st.session_state.seeds.append([len(st.session_state.seeds) + 1, 0.0, 0])
 
-    # Grow seeds
     for i in range(len(st.session_state.seeds)):
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
-
 
 # ---- Determine stepping
 step_now = False
@@ -105,7 +96,6 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 if st.session_state.pop("step_once", False):
     step_now = True
 
-# Faster animation
 if step_now:
     steps_per_frame = 5 if st.session_state.autoplay else 1
     for _ in range(steps_per_frame):
@@ -114,7 +104,6 @@ if step_now:
 # ---- Render Plot
 fig, ax = plt.subplots(figsize=(6, 6))
 
-# 🌟 Restore golden/yellow background
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
 
@@ -144,7 +133,7 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
-# ---- Autoplay Loop
+# ---- Faster Autoplay Loop
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     time.sleep(0.01)
     st.rerun()
