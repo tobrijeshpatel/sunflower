@@ -51,27 +51,23 @@ with st.sidebar:
 
     st.divider()
 
-    col1, col2 = st.columns(2)
+    if st.button("Reset All", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.session_state.angle = GOLDEN_ANGLE
+        st.rerun()
 
-    with col1:
-        if st.button("Reset All", use_container_width=True):
-            st.session_state.seeds = []
-            st.session_state.day = 0
-            st.session_state.autoplay = False
-            st.session_state.angle = GOLDEN_ANGLE
-            st.rerun()
-
-    with col2:
-        if st.button("Next Day", use_container_width=True):
-            st.session_state.step_once = True
-
-    st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
-
-# ---- Description
+# ---- Updated Description (Single Clean Line)
 st.markdown(
-    f"Seeds grow using the golden angle ({GOLDEN_ANGLE:.5f}°), a pattern found throughout nature. "
-    "Even a small change in this angle dramatically alters the structure — try adjusting it and observe how the pattern transforms."
+    f'"Sunflower seeds grow with an angle {GOLDEN_ANGLE:.5f}° between them, '
+    'this is golden angle found throughout nature." Click to see the seeds grow in the pattern.'
 )
+
+# ---- Play / Pause ABOVE Output
+center_col = st.columns([1, 2, 1])[1]
+with center_col:
+    st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
 
 # ---- Simulation Logic
 def advance_day():
@@ -88,18 +84,8 @@ def advance_day():
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
 # ---- Determine stepping
-step_now = False
-
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    step_now = True
-
-if st.session_state.pop("step_once", False):
-    step_now = True
-
-if step_now:
-    steps_per_frame = 5 if st.session_state.autoplay else 1
-    for _ in range(steps_per_frame):
-        advance_day()
+    advance_day()
 
 # ---- Render Plot
 fig, ax = plt.subplots(figsize=(6, 6))
@@ -115,13 +101,14 @@ ax.set_ylim(-radius, radius)
 ax.set_aspect("equal")
 ax.axis("off")
 
-# 🔥 ADD THESE TWO LINES (Corner Labels)
-
+# ---- Elegant Corner Labels
 ax.text(
     -radius * 0.95,
     radius * 0.95,
     f"Day {st.session_state.day}",
-    fontsize=12,
+    fontsize=14,
+    fontweight="bold",
+    alpha=0.6,
     verticalalignment="top"
 )
 
@@ -129,14 +116,15 @@ ax.text(
     radius * 0.95,
     radius * 0.95,
     f"{st.session_state.angle:.1f}°",
-    fontsize=12,
+    fontsize=14,
+    fontweight="bold",
+    alpha=0.6,
     horizontalalignment="right",
     verticalalignment="top"
 )
 
 # ---- Plot Seeds
-x, y = [], []
-colors = []
+x, y, colors = [], [], []
 
 for n, r, age in st.session_state.seeds:
     theta = n * golden_angle_rad
@@ -153,7 +141,7 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
-# ---- Faster Autoplay Loop
+# ---- Autoplay Loop
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    time.sleep(0.01)
+    time.sleep(0.015)
     st.rerun()
