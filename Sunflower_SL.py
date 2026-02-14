@@ -38,7 +38,7 @@ if "day" not in st.session_state:
 if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
 if "angle" not in st.session_state:
-    st.session_state.angle = GOLDEN_ANGLE
+    st.session_state["angle"] = GOLDEN_ANGLE
 
 # ---- Description
 st.markdown(
