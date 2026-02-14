@@ -12,12 +12,46 @@ st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 st.title("🌻 Seed Growth Visualization")
 
+# ---- Modern UI Styling (SAFE – Visual Only)
+st.markdown("""
+<style>
+/* Modern Button */
+div.stButton > button {
+    background: linear-gradient(135deg, #ffcc33, #ff9933);
+    color: black;
+    border-radius: 20px;
+    font-weight: 600;
+    border: none;
+    padding: 0.5em 1.2em;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Modern Toggle */
+div[data-baseweb="switch"] > div {
+    background-color: #ffcc33 !important;
+}
+
+/* Slider */
+div[data-baseweb="slider"] > div {
+    background-color: #ffcc33;
+}
+
+/* Section container */
+.control-panel {
+    background: rgba(255,255,255,0.15);
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ---- Hardcoded Natural Parameters
 TOTAL_DAYS = 200
 SEED_GROWTH_RATE = 0.003
 BASE_RADIUS = 70
 SEEDS_PER_DAY = 15
-GOLDEN_ANGLE = 137.50776  # degrees
+GOLDEN_ANGLE = 137.50776
 
 # ---- Session State Init
 if "seeds" not in st.session_state:
@@ -29,42 +63,13 @@ if "autoplay" not in st.session_state:
 if "angle" not in st.session_state:
     st.session_state.angle = GOLDEN_ANGLE
 
-# ---- Sidebar Controls
-with st.sidebar:
-    st.header("Controls")
-
-    angle_deg = st.slider(
-        "Angle (°)",
-        5.0,
-        145.0,
-        st.session_state.angle
-    )
-    st.session_state.angle = angle_deg
-
-    zoom_option = st.radio(
-        "Zoom",
-        options=["1x", "10x", "1200x"],
-        index=0
-    )
-
-    zoom = {"1x": 1, "10x": 10, "1200x": 1200}[zoom_option]
-
-    st.divider()
-
-    if st.button("Reset All", use_container_width=True):
-        st.session_state.seeds = []
-        st.session_state.day = 0
-        st.session_state.autoplay = False
-        st.session_state.angle = GOLDEN_ANGLE
-        st.rerun()
-
-# ---- Updated Description (Single Clean Line)
+# ---- Description
 st.markdown(
     f'"Sunflower seeds grow with an angle {GOLDEN_ANGLE:.5f}° between them, '
     'this is golden angle found throughout nature." Click to see the seeds grow in the pattern.'
 )
 
-# ---- Play / Pause ABOVE Output
+# ---- Play / Pause ABOVE Output (unchanged logic)
 center_col = st.columns([1, 2, 1])[1]
 with center_col:
     st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
@@ -83,47 +88,40 @@ def advance_day():
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
-# ---- Determine stepping
+# ---- Determine stepping (UNCHANGED)
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     advance_day()
 
 # ---- Render Plot
 fig, ax = plt.subplots(figsize=(6, 6))
-
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
 
 golden_angle_rad = math.radians(st.session_state.angle)
-radius = BASE_RADIUS / zoom
+radius = BASE_RADIUS
 
 ax.set_xlim(-radius, radius)
 ax.set_ylim(-radius, radius)
 ax.set_aspect("equal")
 ax.axis("off")
 
-# ---- Elegant Corner Labels
-ax.text(
-    -radius * 0.95,
-    radius * 0.95,
-    f"Day {st.session_state.day}",
-    fontsize=14,
-    fontweight="bold",
-    alpha=0.6,
-    verticalalignment="top"
-)
+# Corner labels
+ax.text(-radius*0.95, radius*0.95,
+        f"Day {st.session_state.day}",
+        fontsize=14,
+        fontweight="bold",
+        alpha=0.6,
+        verticalalignment="top")
 
-ax.text(
-    radius * 0.95,
-    radius * 0.95,
-    f"{st.session_state.angle:.1f}°",
-    fontsize=14,
-    fontweight="bold",
-    alpha=0.6,
-    horizontalalignment="right",
-    verticalalignment="top"
-)
+ax.text(radius*0.95, radius*0.95,
+        f"{st.session_state.angle:.1f}°",
+        fontsize=14,
+        fontweight="bold",
+        alpha=0.6,
+        horizontalalignment="right",
+        verticalalignment="top")
 
-# ---- Plot Seeds
+# Plot Seeds
 x, y, colors = [], [], []
 
 for n, r, age in st.session_state.seeds:
@@ -141,7 +139,42 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
-# ---- Autoplay Loop
+# ---- Autoplay Loop (UNCHANGED)
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     time.sleep(0.015)
     st.rerun()
+
+# ==================================================
+# CONTROL PANEL BELOW OUTPUT (replaces sidebar)
+# ==================================================
+
+st.markdown('<div class="control-panel">', unsafe_allow_html=True)
+
+st.subheader("Controls")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    angle_deg = st.slider(
+        "Angle (°)",
+        5.0,
+        145.0,
+        st.session_state.angle
+    )
+    st.session_state.angle = angle_deg
+
+with col2:
+    zoom_option = st.radio(
+        "Zoom",
+        options=["1x", "10x", "1200x"],
+        index=0
+    )
+
+if st.button("Reset All"):
+    st.session_state.seeds = []
+    st.session_state.day = 0
+    st.session_state.autoplay = False
+    st.session_state.angle = GOLDEN_ANGLE
+    st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
