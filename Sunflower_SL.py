@@ -77,12 +77,17 @@ st.markdown("""
     
     /* Reduce spacing between elements */
     .element-container {
-        margin-bottom: 0.3rem !important;
+        margin-bottom: 0.2rem !important;
     }
     
     /* Reduce gap after buttons specifically */
     .stButton {
-        margin-bottom: 0.2rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+    
+    /* Reduce gap before matplotlib plot */
+    .stpyplot {
+        margin-top: 0.2rem !important;
     }
     
     /* Consistent typography */
@@ -114,15 +119,13 @@ st.markdown("""
 # TITLE + DESCRIPTION
 # ==========================================================
 
-st.title("🌻 Seed Growth Visualization")
-
 GOLDEN_ANGLE = 137.50776
 
 st.markdown(
     f"""
-    <div style='background-color: #FFF8DC; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 10px;'>
-    <p style='margin: 0 0 8px 0; font-size: 14px; color: #333333;'><strong>Discover Nature's Hidden Math!</strong> 🔍 Sunflower seeds grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed — the <strong>Golden Angle</strong> that allows perfect packing with no gaps!</p>
-    <p style='margin: 0; font-size: 12px; color: #555555;'><em>Press <strong>Play</strong> and watch the magic unfold...</em></p>
+    <div style='background-color: #FFF8DC; padding: 14px 18px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 8px;'>
+    <h1 style='margin: 0 0 10px 0; font-size: 32px; color: #000000; font-weight: 700;'>🌻 Seed Growth Visualization</h1>
+    <p style='margin: 0 0 6px 0; font-size: 14px; color: #333333;'><strong>Discover Nature's Hidden Math!</strong> 🔍 Sunflower seeds grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed — the <strong>Golden Angle</strong> that allows perfect packing with no gaps! <em>Press <strong>Play</strong> and watch the magic unfold...</em></p>
     </div>
     """, unsafe_allow_html=True
 )
@@ -271,7 +274,7 @@ if st.session_state.first_run_complete and not st.session_state.angle_changed:
 # Show slider only after first run is complete
 if st.session_state.first_run_complete:
     # Add quick preset buttons
-    st.markdown("<p style='font-size: 13px; margin-bottom: 4px; color: #333333;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 13px; margin-bottom: 4px; color: #000000; font-weight: 600;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
     preset_cols = st.columns(4)
     
     presets = [
