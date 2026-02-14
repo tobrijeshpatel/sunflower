@@ -29,27 +29,34 @@ BASE_RADIUS = 70
 SEEDS_PER_DAY = 15
 GOLDEN_ANGLE = 137.50776
 
-# ---- Session State Initialization
+# ---- Session State
 if "seeds" not in st.session_state:
     st.session_state.seeds = []
 if "day" not in st.session_state:
     st.session_state.day = 0
 if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
-#if "angle" not in st.session_state:
- #   st.session_state.angle = GOLDEN_ANGLE
 
-# ---- Description
-st.markdown(
-    f'"Sunflower seeds grow with an angle {GOLDEN_ANGLE:.5f}° between them, '
-    'this is golden angle found throughout nature." Click Play to see the seeds grow.'
-)
+# ==========================================================
+# Play Button
+# ==========================================================
 
-# ---- Play Button
 col1, col2, col3 = st.columns([1,2,1])
 with col2:
     if st.button("▶ Play / Pause", use_container_width=True):
         st.session_state.autoplay = not st.session_state.autoplay
+
+# ==========================================================
+# 🔥 IMPORTANT: Render Slider BEFORE using angle
+# ==========================================================
+
+angle = st.slider(
+    "Angle (°)",
+    5.0,
+    145.0,
+    value=GOLDEN_ANGLE,
+    key="angle"
+)
 
 # ==========================================================
 # Simulation Logic
@@ -80,7 +87,7 @@ fig, ax = plt.subplots(figsize=(6,6))
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
 
-angle_rad = math.radians(st.session_state.angle)
+angle_rad = math.radians(angle)
 radius = BASE_RADIUS
 
 ax.set_xlim(-radius, radius)
@@ -94,7 +101,7 @@ ax.text(-radius*0.95, radius*0.95,
         alpha=0.6, verticalalignment="top")
 
 ax.text(radius*0.95, radius*0.95,
-        f"{st.session_state.angle:.1f}°",
+        f"{angle:.1f}°",
         fontsize=14, fontweight="bold",
         alpha=0.6, horizontalalignment="right",
         verticalalignment="top")
@@ -121,24 +128,13 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     st.rerun()
 
 # ==========================================================
-# Controls (Always Visible)
+# Restart + Reset
 # ==========================================================
 
 st.markdown("---")
-st.markdown("#### Adjust Angle")
-
-# Slider owns its own state
-st.slider(
-    "Angle (°)",
-    5.0,
-    145.0,
-    value=GOLDEN_ANGLE,
-    key="angle"
-)
 
 col1, col2 = st.columns(2)
 
-# Restart (does NOT touch angle)
 with col1:
     if st.button("Restart Simulation", use_container_width=True):
         st.session_state.seeds = []
@@ -146,7 +142,6 @@ with col1:
         st.session_state.autoplay = True
         st.rerun()
 
-# Reset (resets angle safely BEFORE rerun)
 with col2:
     if st.button("Reset All", use_container_width=True):
         st.session_state.seeds = []
