@@ -131,39 +131,22 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 
 st.markdown("---")
 
+
 # ==========================================================
 # Show Controls Only After Completion
 # ==========================================================
 
 if st.session_state.day >= TOTAL_DAYS:
 
-    # Initialize flag
-    if "prompt_shown" not in st.session_state:
-        st.session_state.prompt_shown = False
+    # ---- First-time completion message
+    if "completed_once" not in st.session_state:
+        st.session_state.completed_once = True
+        st.success("Now change the angle")
 
-    # Show message only once
-    if not st.session_state.prompt_shown:
-
-        st.markdown("""
-        <div style="
-            background: rgba(255,255,255,0.95);
-            padding: 18px;
-            border-radius: 18px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-            text-align: center;
-            font-weight: 600;
-            margin-bottom: 15px;
-        ">
-            Now change the angle ↓
-        </div>
-        """, unsafe_allow_html=True)
-
+    # Smaller title
     st.markdown("#### Adjust Angle")
 
-    # Ensure slider defaults correctly
-    if "angle" not in st.session_state:
-        st.session_state.angle = GOLDEN_ANGLE
-
+    # Angle Slider
     st.slider(
         "Angle (°)",
         5.0,
@@ -171,21 +154,24 @@ if st.session_state.day >= TOTAL_DAYS:
         key="angle"
     )
 
+    # Side-by-side buttons (mobile safe)
     col1, col2 = st.columns(2, gap="small")
 
     # Restart Simulation
     with col1:
         if st.button("Restart Simulation", use_container_width=True):
-            st.session_state.prompt_shown = True
+            current_angle = st.session_state.angle
+            st.session_state.clear()
             st.session_state.seeds = []
             st.session_state.day = 0
             st.session_state.autoplay = True
+            st.session_state.angle = current_angle
             st.rerun()
 
     # Reset All
     with col2:
         if st.button("Reset All", use_container_width=True):
-            st.session_state.prompt_shown = True
+            st.session_state.clear()
             st.session_state.seeds = []
             st.session_state.day = 0
             st.session_state.autoplay = False
