@@ -122,7 +122,7 @@ st.markdown("""
 GOLDEN_ANGLE = 137.50776
 
 # Use markdown for larger title
-st.markdown("<h1 style='font-size: 16x; font-weight: 700; margin-bottom: 0.3rem;'>🌻 SEED GROWTH VISUALIZATION/h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='font-size: 16x; font-weight: 700; margin-bottom: 0.3rem;'>🌻 SEED GROWTH VISUALIZATION </h1>", unsafe_allow_html=True)
 
 # Description in white text
 st.markdown(
