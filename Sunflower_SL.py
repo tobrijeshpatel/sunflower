@@ -1,6 +1,5 @@
 import time
 import math
-import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 
@@ -126,17 +125,18 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     st.rerun()
 
 # ==========================================================
-# Controls (Always Rendered — Just Conditionally Visible)
+# Controls
 # ==========================================================
 
 st.markdown("---")
 
+# Show completion message once
 if st.session_state.day >= TOTAL_DAYS and st.session_state.show_prompt:
     st.success("Now change the angle ↓")
 
 st.markdown("#### Adjust Angle")
 
-# IMPORTANT: Always render slider
+# Slider ALWAYS rendered — owns angle state
 st.slider(
     "Angle (°)",
     5.0,
@@ -154,12 +154,13 @@ with col1:
         st.session_state.autoplay = True
         st.session_state.show_prompt = False
         st.rerun()
+
 # Reset All
-#with col2:
- #   if st.button("Reset All", use_container_width=True):
- #       st.session_state.seeds = []
-  #      st.session_state.day = 0
-   #     st.session_state.autoplay = False
-    #    st.session_state.angle = GOLDEN_ANGLE
-     #   st.session_state.show_prompt = False
-      #  st.rerun()
+with col2:
+    if st.button("Reset All", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.session_state.show_prompt = False
+        st.session_state.angle = GOLDEN_ANGLE
+        st.rerun()
