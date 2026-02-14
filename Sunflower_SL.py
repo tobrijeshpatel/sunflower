@@ -6,6 +6,31 @@ import streamlit as st
 st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 # ==========================================================
+# CUSTOM STYLING - YELLOW BUTTONS
+# ==========================================================
+
+st.markdown("""
+    <style>
+    /* Make all buttons yellow */
+    .stButton > button {
+        background-color: #FFD700;
+        color: #000000;
+        border: none;
+        font-weight: 600;
+    }
+    .stButton > button:hover {
+        background-color: #FFC700;
+        color: #000000;
+        border: none;
+    }
+    .stButton > button:active {
+        background-color: #FFB700;
+        color: #000000;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# ==========================================================
 # TITLE + DESCRIPTION
 # ==========================================================
 
@@ -52,8 +77,13 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    button_emoji = "⏸️" if st.session_state.autoplay else "▶️"
-    button_text = f"{button_emoji} {'Pause' if st.session_state.autoplay else 'Play'}"
+    # Determine button text based on state
+    if st.session_state.autoplay:
+        button_text = "Pause"
+    elif st.session_state.day >= TOTAL_DAYS:
+        button_text = "Play Again"
+    else:
+        button_text = "Play"
     
     if st.button(button_text, use_container_width=True, type="primary"):
         st.session_state.autoplay = not st.session_state.autoplay
@@ -140,15 +170,15 @@ st.pyplot(fig, clear_figure=True)
 # SLIDER (PLACED BELOW OUTPUT)
 # ==========================================================
 
-st.markdown("### 🎨 Adjust Angle")
+st.markdown("### Adjust Angle")
 
-# Get slider value
+# Slider without a key - directly bound to var_angle
+# This allows it to reset properly when var_angle changes
 new_angle = st.slider(
     "Angle (°)",
     5.0,
     145.0,
     value=st.session_state.var_angle,
-    key="angle_slider_input",
 )
 
 # Update var_angle if slider changed
@@ -173,7 +203,7 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button("🔄 Restart Simulation", use_container_width=True, type="secondary"):
+    if st.button("Restart Simulation", use_container_width=True, type="secondary"):
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = True
@@ -181,13 +211,8 @@ with col1:
         st.rerun()
 
 with col2:
-    if st.button("🏠 Reset All", use_container_width=True, type="secondary"):
-        # Clear the slider widget state completely
-        keys_to_delete = [k for k in st.session_state.keys()]
-        for key in keys_to_delete:
-            del st.session_state[key]
-        
-        # Reinitialize everything
+    if st.button("Reset All", use_container_width=True, type="secondary"):
+        # Reset all values to defaults
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = False
