@@ -8,11 +8,10 @@ st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 st.title("🌻 Seed Growth Visualization")
 
-# ---- Modern Styling
+# ---- Styling (simple + stable)
 st.markdown("""
 <style>
-/* Play Button */
-.play-btn button {
+div.stButton > button {
     background: linear-gradient(135deg, #ffcc33, #ff9933);
     color: black;
     border-radius: 25px;
@@ -20,18 +19,6 @@ st.markdown("""
     border: none;
     padding: 0.6em 1.5em;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-/* Floating Panel */
-.floating-panel {
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-    background: rgba(255,255,255,0.95);
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-    z-index: 999;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -59,16 +46,38 @@ st.markdown(
     'this is golden angle found throughout nature." Click Play to see the seeds grow.'
 )
 
-# ---- Play Button (Modern Toggle Style)
-play_col = st.columns([1,2,1])[1]
-with play_col:
-    if st.button("▶ Play / Pause", key="play", help="Start or pause simulation"):
+# ---- Centered Play Button (alignment fixed)
+col1, col2, col3 = st.columns([1,2,1])
+with col2:
+    if st.button("▶ Play / Pause", use_container_width=True):
         st.session_state.autoplay = not st.session_state.autoplay
+
+# ==========================================================
+# Floating Angle Panel (SLIDER FIXED ORDER)
+# ==========================================================
+if st.session_state.day >= TOTAL_DAYS:
+
+    st.markdown("### Adjust Angle")
+
+    # IMPORTANT: Use key and do not overwrite manually
+    st.slider(
+        "Angle (°)",
+        5.0,
+        145.0,
+        key="angle"
+    )
+
+    if st.button("Restart Simulation"):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.rerun()
 
 # ---- Simulation Logic
 def advance_day():
     if st.session_state.day >= TOTAL_DAYS:
         return
+
     st.session_state.day += 1
 
     for _ in range(SEEDS_PER_DAY):
@@ -78,6 +87,7 @@ def advance_day():
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
+# ---- Run Simulation
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     advance_day()
 
@@ -128,19 +138,3 @@ st.pyplot(fig, clear_figure=True)
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     time.sleep(0.015)
     st.rerun()
-
-# ==========================================================
-# Floating Angle Panel AFTER Simulation Completes
-# ==========================================================
-if st.session_state.day >= TOTAL_DAYS:
-    st.markdown('<div class="floating-panel">', unsafe_allow_html=True)
-    st.markdown("### Adjust Angle")
-    new_angle = st.slider("Angle (°)", 5.0, 145.0, st.session_state.angle)
-    if new_angle != st.session_state.angle:
-        st.session_state.angle = new_angle
-    if st.button("Restart Simulation"):
-        st.session_state.seeds = []
-        st.session_state.day = 0
-        st.session_state.autoplay = False
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
