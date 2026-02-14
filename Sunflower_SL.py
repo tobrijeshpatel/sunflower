@@ -11,21 +11,41 @@ st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 st.markdown("""
     <style>
-    /* Make all buttons yellow */
-    .stButton > button {
-        background-color: #FFD700;
-        color: #000000;
-        border: none;
-        font-weight: 600;
+    /* Make primary buttons (Play/Pause) yellow */
+    div[data-testid="column"] > div > div > div > button[kind="primary"] {
+        background-color: #FFD700 !important;
+        color: #000000 !important;
+        border: none !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
     }
-    .stButton > button:hover {
-        background-color: #FFC700;
-        color: #000000;
-        border: none;
+    div[data-testid="column"] > div > div > div > button[kind="primary"]:hover {
+        background-color: #FFC700 !important;
+        color: #000000 !important;
     }
-    .stButton > button:active {
-        background-color: #FFB700;
-        color: #000000;
+    
+    /* Make secondary buttons (Restart/Reset) yellow */
+    div[data-testid="column"] > div > div > div > button[kind="secondary"] {
+        background-color: #FFD700 !important;
+        color: #000000 !important;
+        border: none !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
+        background-color: #FFC700 !important;
+        color: #000000 !important;
+    }
+    
+    /* Style preset buttons with a lighter color */
+    button[kind="secondary"] {
+        background-color: #FFFACD !important;
+        color: #000000 !important;
+        border: 1px solid #FFD700 !important;
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+    }
+    button[kind="secondary"]:hover {
+        background-color: #FFD700 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -40,12 +60,19 @@ GOLDEN_ANGLE = 137.50776
 
 st.markdown(
     f"""
-Sunflower seeds naturally grow with an angle of **{GOLDEN_ANGLE:.1f}°** between each seed.  
-This special angle is called the **Golden Angle**, a pattern found throughout nature.
-
-Press **Play** to watch the seeds grow in this beautiful spiral pattern.
-"""
+    <div style='background-color: #FFF8DC; padding: 20px; border-radius: 10px; border-left: 5px solid #FFD700;'>
+    <h3 style='margin-top: 0;'>Discover Nature's Hidden Math! 🔍</h3>
+    <p>Sunflower seeds naturally grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed.  
+    This special angle is called the <strong>Golden Angle</strong> — a mathematical pattern found throughout nature in pinecones, pineapples, and flower petals.</p>
+    
+    <p><strong>Why this angle?</strong> It allows seeds to pack most efficiently, with no gaps or overlaps!</p>
+    
+    <p>📌 <em>Press <strong>Play</strong> below and watch the magic unfold...</em></p>
+    </div>
+    """, unsafe_allow_html=True
 )
+
+st.markdown("")
 
 # ==========================================================
 # CONSTANTS
@@ -92,7 +119,14 @@ with col2:
         button_text = "Play"
     
     if st.button(button_text, use_container_width=True, type="primary"):
-        st.session_state.autoplay = not st.session_state.autoplay
+        # If simulation is complete and user clicks Play Again, restart it
+        if st.session_state.day >= TOTAL_DAYS and not st.session_state.autoplay:
+            st.session_state.seeds = []
+            st.session_state.day = 0
+            st.session_state.autoplay = True
+        else:
+            # Normal play/pause toggle
+            st.session_state.autoplay = not st.session_state.autoplay
         st.rerun()
 
 st.markdown("<br>", unsafe_allow_html=True)
@@ -145,7 +179,7 @@ ax.text(
     f"Day {st.session_state.day} of {TOTAL_DAYS}",
     fontsize=14,
     fontweight="bold",
-    alpha=0.6,
+    alpha=0.7,
     verticalalignment="top",
 )
 
@@ -155,9 +189,20 @@ ax.text(
     f"{st.session_state.var_angle:.1f}°",
     fontsize=14,
     fontweight="bold",
-    alpha=0.6,
+    alpha=0.7,
     horizontalalignment="right",
     verticalalignment="top",
+)
+
+# Add seed count
+ax.text(
+    0,
+    -BASE_RADIUS * 0.95,
+    f"Seeds: {len(st.session_state.seeds)}",
+    fontsize=12,
+    alpha=0.6,
+    horizontalalignment="center",
+    verticalalignment="bottom",
 )
 
 x, y, colors = [], [], []
@@ -177,17 +222,46 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
+# Show progress bar during simulation
+if st.session_state.day < TOTAL_DAYS:
+    progress = st.session_state.day / TOTAL_DAYS
+    st.progress(progress, text=f"Growing... {int(progress * 100)}% complete")
+elif st.session_state.day >= TOTAL_DAYS and st.session_state.first_run_complete:
+    st.success("🌻 **Growth complete!** Perfect spiral achieved.")
+
 # ==========================================================
 # SLIDER (PLACED BELOW OUTPUT)
 # ==========================================================
 
 # Show message after first run completes
 if st.session_state.first_run_complete and not st.session_state.angle_changed:
-    st.success("✨ Now change the angle and see what happens!")
-    st.markdown("### Adjust Angle")
+    st.success("✨ **Amazing, right?** Now try changing the angle below and see how the pattern transforms!")
+    st.info("💡 **Pro tip:** Try angles like 90°, 120°, or 145° to see dramatically different patterns. Notice how gaps appear when you move away from the golden angle!")
+    st.markdown("### 🎨 Adjust Angle")
 
 # Show slider only after first run is complete
 if st.session_state.first_run_complete:
+    # Add quick preset buttons
+    st.markdown("**🎯 Quick Presets:** Try these interesting angles!")
+    preset_cols = st.columns(5)
+    
+    presets = [
+        ("Golden", GOLDEN_ANGLE),
+        ("90°", 90.0),
+        ("120°", 120.0),
+        ("100°", 100.0),
+        ("145°", 145.0)
+    ]
+    
+    for idx, (label, angle) in enumerate(presets):
+        with preset_cols[idx]:
+            if st.button(label, use_container_width=True, key=f"preset_{idx}"):
+                st.session_state.var_angle = angle
+                st.session_state.angle_changed = True
+                st.rerun()
+    
+    st.markdown("")
+    
     # Slider without a key - directly bound to var_angle
     # This allows it to reset properly when var_angle changes
     new_angle = st.slider(
