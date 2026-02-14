@@ -335,7 +335,7 @@ col1, col2 = st.columns(2)
 # Show Restart button only after angle has been changed
 if st.session_state.angle_changed:
     with col1:
-        if st.button("Restart Simulation", use_container_width=True, type="secondary"):
+        if st.button("Restart Sim @ selected angle", use_container_width=True, type="secondary"):
             st.session_state.seeds = []
             st.session_state.day = 0
             st.session_state.autoplay = True
