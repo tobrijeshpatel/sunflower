@@ -4,56 +4,46 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 
-# ---------------------------
-# Professional Streamlit Version
-# ---------------------------
-
 st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 st.title("🌻 Seed Growth Visualization")
 
-# ---- Modern UI Styling (SAFE – Visual Only)
+# ---- Modern Styling
 st.markdown("""
 <style>
-/* Modern Button */
-div.stButton > button {
+/* Play Button */
+.play-btn button {
     background: linear-gradient(135deg, #ffcc33, #ff9933);
     color: black;
-    border-radius: 20px;
+    border-radius: 25px;
     font-weight: 600;
     border: none;
-    padding: 0.5em 1.2em;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    padding: 0.6em 1.5em;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-/* Modern Toggle */
-div[data-baseweb="switch"] > div {
-    background-color: #ffcc33 !important;
-}
-
-/* Slider */
-div[data-baseweb="slider"] > div {
-    background-color: #ffcc33;
-}
-
-/* Section container */
-.control-panel {
-    background: rgba(255,255,255,0.15);
+/* Floating Panel */
+.floating-panel {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background: rgba(255,255,255,0.95);
     padding: 20px;
-    border-radius: 15px;
-    margin-top: 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    z-index: 999;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---- Hardcoded Natural Parameters
+# ---- Constants
 TOTAL_DAYS = 200
 SEED_GROWTH_RATE = 0.003
 BASE_RADIUS = 70
 SEEDS_PER_DAY = 15
 GOLDEN_ANGLE = 137.50776
 
-# ---- Session State Init
+# ---- Session State
 if "seeds" not in st.session_state:
     st.session_state.seeds = []
 if "day" not in st.session_state:
@@ -66,19 +56,19 @@ if "angle" not in st.session_state:
 # ---- Description
 st.markdown(
     f'"Sunflower seeds grow with an angle {GOLDEN_ANGLE:.5f}° between them, '
-    'this is golden angle found throughout nature." Click to see the seeds grow in the pattern.'
+    'this is golden angle found throughout nature." Click Play to see the seeds grow.'
 )
 
-# ---- Play / Pause ABOVE Output (unchanged logic)
-center_col = st.columns([1, 2, 1])[1]
-with center_col:
-    st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
+# ---- Play Button (Modern Toggle Style)
+play_col = st.columns([1,2,1])[1]
+with play_col:
+    if st.button("▶ Play / Pause", key="play", help="Start or pause simulation"):
+        st.session_state.autoplay = not st.session_state.autoplay
 
 # ---- Simulation Logic
 def advance_day():
     if st.session_state.day >= TOTAL_DAYS:
         return
-
     st.session_state.day += 1
 
     for _ in range(SEEDS_PER_DAY):
@@ -88,16 +78,15 @@ def advance_day():
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
-# ---- Determine stepping (UNCHANGED)
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     advance_day()
 
 # ---- Render Plot
-fig, ax = plt.subplots(figsize=(6, 6))
+fig, ax = plt.subplots(figsize=(6,6))
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
 
-golden_angle_rad = math.radians(st.session_state.angle)
+angle_rad = math.radians(st.session_state.angle)
 radius = BASE_RADIUS
 
 ax.set_xlim(-radius, radius)
@@ -105,27 +94,23 @@ ax.set_ylim(-radius, radius)
 ax.set_aspect("equal")
 ax.axis("off")
 
-# Corner labels
+# Corner Labels
 ax.text(-radius*0.95, radius*0.95,
         f"Day {st.session_state.day}",
-        fontsize=14,
-        fontweight="bold",
-        alpha=0.6,
-        verticalalignment="top")
+        fontsize=14, fontweight="bold",
+        alpha=0.6, verticalalignment="top")
 
 ax.text(radius*0.95, radius*0.95,
         f"{st.session_state.angle:.1f}°",
-        fontsize=14,
-        fontweight="bold",
-        alpha=0.6,
-        horizontalalignment="right",
+        fontsize=14, fontweight="bold",
+        alpha=0.6, horizontalalignment="right",
         verticalalignment="top")
 
 # Plot Seeds
 x, y, colors = [], [], []
 
 for n, r, age in st.session_state.seeds:
-    theta = n * golden_angle_rad
+    theta = n * angle_rad
     xpos = r * math.cos(theta)
     ypos = r * math.sin(theta)
 
@@ -139,42 +124,23 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
-# ---- Autoplay Loop (UNCHANGED)
+# ---- Autoplay Loop
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     time.sleep(0.015)
     st.rerun()
 
-# ==================================================
-# CONTROL PANEL BELOW OUTPUT (replaces sidebar)
-# ==================================================
-
-st.markdown('<div class="control-panel">', unsafe_allow_html=True)
-
-st.subheader("Controls")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    angle_deg = st.slider(
-        "Angle (°)",
-        5.0,
-        145.0,
-        st.session_state.angle
-    )
-    st.session_state.angle = angle_deg
-
-with col2:
-    zoom_option = st.radio(
-        "Zoom",
-        options=["1x", "10x", "1200x"],
-        index=0
-    )
-
-if st.button("Reset All"):
-    st.session_state.seeds = []
-    st.session_state.day = 0
-    st.session_state.autoplay = False
-    st.session_state.angle = GOLDEN_ANGLE
-    st.rerun()
-
-st.markdown('</div>', unsafe_allow_html=True)
+# ==========================================================
+# Floating Angle Panel AFTER Simulation Completes
+# ==========================================================
+if st.session_state.day >= TOTAL_DAYS:
+    st.markdown('<div class="floating-panel">', unsafe_allow_html=True)
+    st.markdown("### Adjust Angle")
+    new_angle = st.slider("Angle (°)", 5.0, 145.0, st.session_state.angle)
+    if new_angle != st.session_state.angle:
+        st.session_state.angle = new_angle
+    if st.button("Restart Simulation"):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
