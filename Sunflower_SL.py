@@ -149,20 +149,11 @@ col1, col2 = st.columns(2)
 # Restart Simulation
 with col1:
     if st.button("Restart Simulation", use_container_width=True):
-
-        # Capture current slider value BEFORE anything else
-        current_angle = st.session_state.angle
-
-        # Reset simulation state only
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = True
-
-        # Explicitly restore angle (safety)
-        st.session_state.angle = current_angle
-
+        st.session_state.show_prompt = False
         st.rerun()
-
 # Reset All
 with col2:
     if st.button("Reset All", use_container_width=True):
