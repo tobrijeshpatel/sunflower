@@ -30,7 +30,7 @@ BASE_RADIUS = 70
 SEEDS_PER_DAY = 15
 GOLDEN_ANGLE = 137.50776
 
-# ---- Session State
+# ---- Session State Initialization
 if "seeds" not in st.session_state:
     st.session_state.seeds = []
 if "day" not in st.session_state:
@@ -38,7 +38,9 @@ if "day" not in st.session_state:
 if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
 if "angle" not in st.session_state:
-    st.session_state["angle"] = GOLDEN_ANGLE
+    st.session_state.angle = GOLDEN_ANGLE
+if "show_prompt" not in st.session_state:
+    st.session_state.show_prompt = True
 
 # ---- Description
 st.markdown(
@@ -46,7 +48,7 @@ st.markdown(
     'this is golden angle found throughout nature." Click Play to see the seeds grow.'
 )
 
-# ---- Play Button (Centered)
+# ---- Play Button
 col1, col2, col3 = st.columns([1,2,1])
 with col2:
     if st.button("▶ Play / Pause", use_container_width=True):
@@ -69,9 +71,9 @@ def advance_day():
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
-# ---- Faster Simulation (3 days per frame)
+# Speed: 6 days per frame
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    for _ in range(6):  # 🔥 speed boost
+    for _ in range(6):
         advance_day()
 
 # ==========================================================
@@ -90,7 +92,6 @@ ax.set_ylim(-radius, radius)
 ax.set_aspect("equal")
 ax.axis("off")
 
-# Corner Labels
 ax.text(-radius*0.95, radius*0.95,
         f"Day {st.session_state.day} of {TOTAL_DAYS}",
         fontsize=14, fontweight="bold",
@@ -102,7 +103,6 @@ ax.text(radius*0.95, radius*0.95,
         alpha=0.6, horizontalalignment="right",
         verticalalignment="top")
 
-# Plot Seeds
 x, y, colors = [], [], []
 
 for n, r, age in st.session_state.seeds:
@@ -126,52 +126,41 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     st.rerun()
 
 # ==========================================================
-# Angle Slider 
+# Controls (Always Rendered — Just Conditionally Visible)
 # ==========================================================
 
 st.markdown("---")
 
-if st.session_state.day >= TOTAL_DAYS:
+if st.session_state.day >= TOTAL_DAYS and st.session_state.show_prompt:
+    st.success("Now change the angle ↓")
 
-    if "show_prompt" not in st.session_state:
-        st.session_state.show_prompt = True
+st.markdown("#### Adjust Angle")
 
-    if st.session_state.show_prompt:
-        st.info("Now change the angle ↓")
+# IMPORTANT: Always render slider
+st.slider(
+    "Angle (°)",
+    5.0,
+    145.0,
+    key="angle"
+)
 
-    st.markdown("#### Adjust Angle")
+col1, col2 = st.columns(2)
 
-    # IMPORTANT: do NOT assign value manually
-    st.slider(
-        "Angle (°)",
-        5.0,
-        145.0,
-        key="angle"
-    )
+# Restart Simulation
+with col1:
+    if st.button("Restart Simulation", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = True
+        st.session_state.show_prompt = False
+        st.rerun()
 
-    col1, col2 = st.columns(2, gap="small")
-
-    # Restart Simulation (keep current angle)
-    with col1:
-        if st.button("Restart Simulation", use_container_width=True):
-            st.session_state.seeds = []
-            st.session_state.day = 0
-            st.session_state.autoplay = True
-            st.session_state.show_prompt = False
-            st.rerun()
-
-    # Reset All (reset angle safely BEFORE rerun)
-    with col2:
-        if st.button("Reset All", use_container_width=True):
-
-            # Reset non-widget state
-            st.session_state.seeds = []
-            st.session_state.day = 0
-            st.session_state.autoplay = False
-            st.session_state.show_prompt = False
-
-            # Reset slider safely
-            st.session_state["angle"] = GOLDEN_ANGLE
-
-            st.rerun()
-
+# Reset All
+with col2:
+    if st.button("Reset All", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.session_state.angle = GOLDEN_ANGLE
+        st.session_state.show_prompt = False
+        st.rerun()
