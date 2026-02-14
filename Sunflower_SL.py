@@ -130,40 +130,35 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 # ==========================================================
 
 st.markdown("---")
-
 st.subheader("Adjust Angle")
 
-# Angle slider (state-managed)
-angle_value = st.slider(
+# 🔥 Let slider directly control session state
+st.slider(
     "Angle (°)",
     5.0,
     145.0,
-    st.session_state.get("angle", GOLDEN_ANGLE),
-    key="angle_slider"
+    key="angle"
 )
-
-# Always sync angle
-st.session_state.angle = angle_value
 
 col1, col2 = st.columns(2)
 
-# ---- Restart Simulation (auto start, keeps slider angle)
+# ---- Restart Simulation (auto start, keep current angle)
 with col1:
     if st.button("Restart Simulation"):
+        current_angle = st.session_state.angle
+        st.session_state.clear()
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = True
+        st.session_state.angle = current_angle
         st.rerun()
 
-# ---- Reset All (safe reset without API crash)
+# ---- Reset All (golden angle, no auto start)
 with col2:
     if st.button("Reset All"):
+        st.session_state.clear()
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = False
-
-        # Safe reset of slider
-        st.session_state.angle_slider = GOLDEN_ANGLE
         st.session_state.angle = GOLDEN_ANGLE
-
         st.rerun()
