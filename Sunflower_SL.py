@@ -92,7 +92,7 @@ ax.axis("off")
 
 # Corner Labels
 ax.text(-radius*0.95, radius*0.95,
-        f"Day {st.session_state.day}",
+        f"Day {st.session_state.day} of {TOTAL_DAYS}"
         fontsize=14, fontweight="bold",
         alpha=0.6, verticalalignment="top")
 
@@ -131,40 +131,39 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 
 st.markdown("---")
 
-# ---- Day Progress Slider (Visual Only)
-st.slider(
-    "Simulation Progress",
-    min_value=0,
-    max_value=TOTAL_DAYS,
-    value=st.session_state.day,
-    disabled=True
-)
-
 st.subheader("Adjust Angle")
 
-st.slider(
+# Angle slider (state-managed)
+angle_value = st.slider(
     "Angle (°)",
     5.0,
     145.0,
-    key="angle"
+    st.session_state.get("angle", GOLDEN_ANGLE),
+    key="angle_slider"
 )
+
+# Always sync angle
+st.session_state.angle = angle_value
 
 col1, col2 = st.columns(2)
 
-# ---- Restart Simulation (keeps angle, auto starts)
+# ---- Restart Simulation (auto start, keeps slider angle)
 with col1:
     if st.button("Restart Simulation"):
         st.session_state.seeds = []
         st.session_state.day = 0
-        st.session_state.autoplay = True   # 🔥 auto start
+        st.session_state.autoplay = True
         st.rerun()
 
-# ---- Reset All (golden angle, no auto start)
+# ---- Reset All (safe reset without API crash)
 with col2:
     if st.button("Reset All"):
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = False
-        st.session_state.angle = GOLDEN_ANGLE
-        st.rerun()
 
+        # Safe reset of slider
+        st.session_state.angle_slider = GOLDEN_ANGLE
+        st.session_state.angle = GOLDEN_ANGLE
+
+        st.rerun()
