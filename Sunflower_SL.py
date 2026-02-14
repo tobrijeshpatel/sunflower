@@ -155,11 +155,11 @@ with col1:
         st.session_state.show_prompt = False
         st.rerun()
 # Reset All
-with col2:
-    if st.button("Reset All", use_container_width=True):
-        st.session_state.seeds = []
-        st.session_state.day = 0
-        st.session_state.autoplay = False
-        st.session_state.angle = GOLDEN_ANGLE
-        st.session_state.show_prompt = False
-        st.rerun()
+#with col2:
+ #   if st.button("Reset All", use_container_width=True):
+ #       st.session_state.seeds = []
+  #      st.session_state.day = 0
+   #     st.session_state.autoplay = False
+    #    st.session_state.angle = GOLDEN_ANGLE
+     #   st.session_state.show_prompt = False
+      #  st.rerun()
