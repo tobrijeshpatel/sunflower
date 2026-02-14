@@ -82,8 +82,9 @@ st.markdown("""
     
     /* Consistent typography */
     h1 {
-        font-size: 28px !important;
+        font-size: 32px !important;
         margin-bottom: 0.5rem !important;
+        font-weight: 700 !important;
     }
     h4 {
         font-size: 16px !important;
@@ -115,8 +116,7 @@ GOLDEN_ANGLE = 137.50776
 st.markdown(
     f"""
     <div style='background-color: #FFF8DC; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 10px;'>
-    <p style='margin: 0 0 8px 0; font-size: 14px; color: #333333;'><strong>Discover Nature's Hidden Math!</strong> 🔍</p>
-    <p style='margin: 0 0 8px 0; font-size: 13px; color: #444444;'>Sunflower seeds grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed — the <strong>Golden Angle</strong> that allows perfect packing with no gaps!</p>
+    <p style='margin: 0 0 8px 0; font-size: 14px; color: #333333;'><strong>Discover Nature's Hidden Math!</strong> 🔍 Sunflower seeds grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed — the <strong>Golden Angle</strong> that allows perfect packing with no gaps!</p>
     <p style='margin: 0; font-size: 12px; color: #555555;'><em>Press <strong>Play</strong> and watch the magic unfold...</em></p>
     </div>
     """, unsafe_allow_html=True
@@ -219,23 +219,14 @@ ax.set_ylim(-BASE_RADIUS, BASE_RADIUS)
 ax.set_aspect("equal")
 ax.axis("off")
 
-ax.text(
-    -BASE_RADIUS * 0.95,
-    BASE_RADIUS * 0.95,
-    f"Day {st.session_state.day} of {TOTAL_DAYS}",
-    fontsize=14,
-    fontweight="bold",
-    alpha=0.7,
-    verticalalignment="top",
-)
-
+# Display angle in top right corner (smaller font)
 ax.text(
     BASE_RADIUS * 0.95,
     BASE_RADIUS * 0.95,
     f"{st.session_state.var_angle:.1f}°",
-    fontsize=14,
+    fontsize=11,
     fontweight="bold",
-    alpha=0.7,
+    alpha=0.6,
     horizontalalignment="right",
     verticalalignment="top",
 )
@@ -291,7 +282,7 @@ if st.session_state.first_run_complete:
     
     presets = [
         ("Golden", GOLDEN_ANGLE),
-        ("50°", 50.0),
+        ("45°", 45.0),
         ("90°", 90.0),
         ("90.25°", 90.25),
         ("145°", 145.0)
