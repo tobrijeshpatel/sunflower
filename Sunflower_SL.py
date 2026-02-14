@@ -54,6 +54,21 @@ with col2:
         st.session_state.autoplay = not st.session_state.autoplay
 
 # ==========================================================
+# SLIDER (PLACED BEFORE SIMULATION)
+# ==========================================================
+
+st.markdown("### Adjust Angle")
+
+# Slider directly controls var_angle - placed BEFORE rendering
+st.session_state.var_angle = st.slider(
+    "Angle (°)",
+    5.0,
+    145.0,
+    value=st.session_state.var_angle,
+    key="angle_slider_input",
+)
+
+# ==========================================================
 # SIMULATION ENGINE
 # ==========================================================
 
@@ -130,21 +145,6 @@ ax.scatter(x, y, c=colors, s=14)
 st.pyplot(fig, clear_figure=True)
 
 # ==========================================================
-# SLIDER (PLACED BELOW OUTPUT)
-# ==========================================================
-
-st.markdown("### Adjust Angle")
-
-# Slider directly controls var_angle
-st.session_state.var_angle = st.slider(
-    "Angle (°)",
-    5.0,
-    145.0,
-    value=st.session_state.var_angle,
-    key="angle_slider_input",
-)
-
-# ==========================================================
 # AUTO RERUN (ANIMATION)
 # ==========================================================
 
@@ -170,10 +170,11 @@ with col1:
 
 with col2:
     if st.button("Reset All", use_container_width=True):
-        # Clear all session state to force a fresh reset
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        # Reinitialize with golden angle
+        # Delete the slider key specifically to force it to reset
+        if "angle_slider_input" in st.session_state:
+            del st.session_state["angle_slider_input"]
+        
+        # Reset all other values
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = False
