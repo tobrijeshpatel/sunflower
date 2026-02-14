@@ -130,22 +130,18 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 # ==========================================================
 
 st.markdown("---")
-# ==========================================================
-# Show Controls Only After Completion
-# ==========================================================
 
 if st.session_state.day >= TOTAL_DAYS:
 
-    # Initialize prompt flag
     if "show_prompt" not in st.session_state:
         st.session_state.show_prompt = True
 
-    # Show message only once
     if st.session_state.show_prompt:
         st.info("Now change the angle ↓")
 
     st.markdown("#### Adjust Angle")
 
+    # IMPORTANT: do NOT assign value manually
     st.slider(
         "Angle (°)",
         5.0,
@@ -155,27 +151,27 @@ if st.session_state.day >= TOTAL_DAYS:
 
     col1, col2 = st.columns(2, gap="small")
 
-    # Restart Simulation
+    # Restart Simulation (keep current angle)
     with col1:
         if st.button("Restart Simulation", use_container_width=True):
             st.session_state.seeds = []
             st.session_state.day = 0
             st.session_state.autoplay = True
-
-            # Turn off prompt permanently
             st.session_state.show_prompt = False
-
             st.rerun()
 
-    # Reset All
+    # Reset All (reset angle safely BEFORE rerun)
     with col2:
         if st.button("Reset All", use_container_width=True):
+
+            # Reset non-widget state
             st.session_state.seeds = []
             st.session_state.day = 0
             st.session_state.autoplay = False
-            st.session_state.angle = GOLDEN_ANGLE
-
-            # Turn off prompt permanently
             st.session_state.show_prompt = False
 
+            # Reset slider safely
+            st.session_state["angle"] = GOLDEN_ANGLE
+
             st.rerun()
+
