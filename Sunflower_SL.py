@@ -121,11 +121,23 @@ st.markdown("""
 
 GOLDEN_ANGLE = 137.50776
 
+# Use markdown for larger title
+st.markdown("<h1 style='font-size: 42px; font-weight: 700; margin-bottom: 0.3rem;'>🌻 Seed Growth Visualization</h1>", unsafe_allow_html=True)
+
+# Description in white text
 st.markdown(
     f"""
-    <div style='background-color: #FFF8DC; padding: 14px 18px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 8px;'>
-    <h1 style='margin: 0 0 10px 0; font-size: 32px; color: #000000; font-weight: 700;'>🌻 Seed Growth Visualization</h1>
-    <p style='margin: 0 0 6px 0; font-size: 14px; color: #333333;'><strong>Discover Nature's Hidden Math!</strong> 🔍 Sunflower seeds grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed — the <strong>Golden Angle</strong> that allows perfect packing with no gaps! <em>Press <strong>Play</strong> and watch the magic unfold...</em></p>
+    <p style='font-size: 14px; color: #FFFFFF; margin-bottom: 0.5rem;'>
+    <strong>Discover Nature's Hidden Math!</strong> 🔍 Sunflower seeds grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed — the <strong>Golden Angle</strong> that allows perfect packing with no gaps! <em>Press <strong>Play</strong> and watch the magic unfold...</em>
+    </p>
+    """, unsafe_allow_html=True
+)
+
+# Simple info card (can be removed if not needed)
+st.markdown(
+    """
+    <div style='background-color: #FFF8DC; padding: 10px 14px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 8px;'>
+    <p style='margin: 0; font-size: 13px; color: #333333;'>Watch how nature uses mathematics to create perfect spirals!</p>
     </div>
     """, unsafe_allow_html=True
 )
@@ -274,12 +286,12 @@ if st.session_state.first_run_complete and not st.session_state.angle_changed:
 # Show slider only after first run is complete
 if st.session_state.first_run_complete:
     # Add quick preset buttons
-    st.markdown("<p style='font-size: 13px; margin-bottom: 4px; color: #000000; font-weight: 600;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 13px; margin-bottom: 4px; color: #FFFFFF; font-weight: 600;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
     preset_cols = st.columns(4)
     
     presets = [
         ("Golden", GOLDEN_ANGLE),
-        ("45.5°", 45.5),
+        ("72.4°", 72.4),
         ("90°", 90.0),
         ("90.25°", 90.25)
     ]
