@@ -8,7 +8,7 @@ st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 st.title("🌻 Seed Growth Visualization")
 
-# ---- Styling (simple + stable)
+# ---- Styling
 st.markdown("""
 <style>
 div.stButton > button {
@@ -46,34 +46,16 @@ st.markdown(
     'this is golden angle found throughout nature." Click Play to see the seeds grow.'
 )
 
-# ---- Centered Play Button (alignment fixed)
+# ---- Play Button (Centered)
 col1, col2, col3 = st.columns([1,2,1])
 with col2:
     if st.button("▶ Play / Pause", use_container_width=True):
         st.session_state.autoplay = not st.session_state.autoplay
 
 # ==========================================================
-# Floating Angle Panel (SLIDER FIXED ORDER)
+# Simulation Logic
 # ==========================================================
-if st.session_state.day >= TOTAL_DAYS:
 
-    st.markdown("### Adjust Angle")
-
-    # IMPORTANT: Use key and do not overwrite manually
-    st.slider(
-        "Angle (°)",
-        5.0,
-        145.0,
-        key="angle"
-    )
-
-    if st.button("Restart Simulation"):
-        st.session_state.seeds = []
-        st.session_state.day = 0
-        st.session_state.autoplay = False
-        st.rerun()
-
-# ---- Simulation Logic
 def advance_day():
     if st.session_state.day >= TOTAL_DAYS:
         return
@@ -87,11 +69,15 @@ def advance_day():
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
-# ---- Run Simulation
+# ---- Faster Simulation (3 days per frame)
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    advance_day()
+    for _ in range(3):  # 🔥 speed boost
+        advance_day()
 
-# ---- Render Plot
+# ==========================================================
+# Render Plot
+# ==========================================================
+
 fig, ax = plt.subplots(figsize=(6,6))
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
@@ -137,4 +123,24 @@ st.pyplot(fig, clear_figure=True)
 # ---- Autoplay Loop
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     time.sleep(0.015)
+    st.rerun()
+
+# ==========================================================
+# Angle Slider (ALWAYS VISIBLE BELOW OUTPUT)
+# ==========================================================
+
+st.markdown("---")
+st.subheader("Adjust Angle")
+
+st.slider(
+    "Angle (°)",
+    5.0,
+    145.0,
+    key="angle"
+)
+
+if st.button("Restart Simulation"):
+    st.session_state.seeds = []
+    st.session_state.day = 0
+    st.session_state.autoplay = False
     st.rerun()
