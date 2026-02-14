@@ -71,7 +71,7 @@ def advance_day():
 
 # ---- Faster Simulation (3 days per frame)
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    for _ in range(3):  # 🔥 speed boost
+    for _ in range(8):  # 🔥 speed boost
         advance_day()
 
 # ==========================================================
