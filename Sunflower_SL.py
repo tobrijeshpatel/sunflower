@@ -38,6 +38,15 @@ if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
 if "show_prompt" not in st.session_state:
     st.session_state.show_prompt = True
+if "angle" not in st.session_state:
+    st.session_state.angle = GOLDEN_ANGLE
+if "reset_flag" not in st.session_state:
+    st.session_state.reset_flag = False
+
+# ---- Handle Reset Safely BEFORE Widgets Render
+if st.session_state.reset_flag:
+    st.session_state.angle = GOLDEN_ANGLE
+    st.session_state.reset_flag = False
 
 # ---- Description
 st.markdown(
@@ -50,19 +59,6 @@ col1, col2, col3 = st.columns([1,2,1])
 with col2:
     if st.button("▶ Play / Pause", use_container_width=True):
         st.session_state.autoplay = not st.session_state.autoplay
-
-# ==========================================================
-# Angle Slider (ALWAYS RENDERED — Single Source of Truth)
-# ==========================================================
-
-# Slider owns its own default value
-angle = st.slider(
-    "Angle (°)",
-    5.0,
-    145.0,
-    value=GOLDEN_ANGLE,
-    key="angle"
-)
 
 # ==========================================================
 # Simulation Logic
@@ -81,7 +77,6 @@ def advance_day():
         st.session_state.seeds[i][2] += 1
         st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
 
-# Speed = 6 days per frame
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     for _ in range(6):
         advance_day()
@@ -94,7 +89,7 @@ fig, ax = plt.subplots(figsize=(6,6))
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
 
-angle_rad = math.radians(angle)
+angle_rad = math.radians(st.session_state.angle)
 radius = BASE_RADIUS
 
 ax.set_xlim(-radius, radius)
@@ -108,7 +103,7 @@ ax.text(-radius*0.95, radius*0.95,
         alpha=0.6, verticalalignment="top")
 
 ax.text(radius*0.95, radius*0.95,
-        f"{angle:.1f}°",
+        f"{st.session_state.angle:.1f}°",
         fontsize=14, fontweight="bold",
         alpha=0.6, horizontalalignment="right",
         verticalalignment="top")
@@ -130,13 +125,12 @@ ax.scatter(x, y, c=colors, s=14)
 
 st.pyplot(fig, clear_figure=True)
 
-# ---- Autoplay Loop
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     time.sleep(0.015)
     st.rerun()
 
 # ==========================================================
-# Completion Controls (Only After 200 Days)
+# Controls (Below Output)
 # ==========================================================
 
 if st.session_state.day >= TOTAL_DAYS:
@@ -148,7 +142,6 @@ if st.session_state.day >= TOTAL_DAYS:
 
     col1, col2 = st.columns(2)
 
-    # Restart Simulation (keeps slider value)
     with col1:
         if st.button("Restart Simulation", use_container_width=True):
             st.session_state.seeds = []
@@ -157,15 +150,20 @@ if st.session_state.day >= TOTAL_DAYS:
             st.session_state.show_prompt = False
             st.rerun()
 
-    # Reset All (returns slider to golden)
     with col2:
         if st.button("Reset All", use_container_width=True):
             st.session_state.seeds = []
             st.session_state.day = 0
             st.session_state.autoplay = False
             st.session_state.show_prompt = False
-
-            # Reset slider safely
-            st.session_state["angle"] = GOLDEN_ANGLE
-
+            st.session_state.reset_flag = True
             st.rerun()
+
+    st.markdown("#### Adjust Angle")
+
+    st.slider(
+        "Angle (°)",
+        5.0,
+        145.0,
+        key="angle"
+    )
