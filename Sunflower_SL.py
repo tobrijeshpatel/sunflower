@@ -3,7 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import streamlit as st
 
-st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
+#st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 # ==========================================================
 # CUSTOM STYLING - YELLOW BUTTONS
