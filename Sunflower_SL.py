@@ -17,32 +17,22 @@ st.markdown("""
         padding-bottom: 1rem;
     }
     
-    /* Make primary buttons (Play/Pause) yellow */
-    div[data-testid="column"] > div > div > div > button[kind="primary"] {
+    /* Make ALL buttons yellow - including primary */
+    .stButton > button {
         background-color: #FFD700 !important;
         color: #000000 !important;
         border: none !important;
         font-weight: 600 !important;
-        font-size: 15px !important;
-        padding: 8px 16px !important;
     }
-    div[data-testid="column"] > div > div > div > button[kind="primary"]:hover {
+    .stButton > button:hover {
         background-color: #FFC700 !important;
         color: #000000 !important;
     }
     
-    /* Make secondary buttons (Restart/Reset) yellow */
-    div[data-testid="column"] > div > div > div > button[kind="secondary"] {
-        background-color: #FFD700 !important;
-        color: #000000 !important;
-        border: none !important;
-        font-weight: 600 !important;
+    /* Consistent button sizing */
+    div[data-testid="column"] > div > div > div > button {
         font-size: 14px !important;
-        padding: 6px 12px !important;
-    }
-    div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
-        background-color: #FFC700 !important;
-        color: #000000 !important;
+        padding: 8px 16px !important;
     }
     
     /* Style preset buttons with a lighter color and smaller size */
@@ -51,8 +41,8 @@ st.markdown("""
         color: #000000 !important;
         border: 1px solid #FFD700 !important;
         font-size: 11px !important;
-        padding: 4px 6px !important;
-        min-height: 32px !important;
+        padding: 6px 8px !important;
+        min-height: 34px !important;
     }
     button[kind="secondary"]:hover {
         background-color: #FFD700 !important;
@@ -66,16 +56,22 @@ st.markdown("""
             padding-right: 1rem;
         }
         
+        /* Make buttons smaller but not full width on mobile */
         button[kind="secondary"] {
             font-size: 10px !important;
-            padding: 3px 4px !important;
-            min-height: 28px !important;
+            padding: 4px 4px !important;
+            min-height: 30px !important;
+            white-space: nowrap !important;
         }
         
-        div[data-testid="column"] > div > div > div > button[kind="primary"],
-        div[data-testid="column"] > div > div > div > button[kind="secondary"] {
+        div[data-testid="column"] > div > div > div > button {
             font-size: 13px !important;
-            padding: 6px 10px !important;
+            padding: 7px 12px !important;
+        }
+        
+        /* Reduce column gaps */
+        div[data-testid="column"] {
+            padding: 0 2px !important;
         }
     }
     
@@ -84,13 +80,26 @@ st.markdown("""
         margin-bottom: 0.5rem !important;
     }
     
-    /* Compact headers */
+    /* Consistent typography */
     h1 {
+        font-size: 28px !important;
         margin-bottom: 0.5rem !important;
     }
     h4 {
+        font-size: 16px !important;
         margin-top: 0.5rem !important;
         margin-bottom: 0.5rem !important;
+    }
+    
+    /* Consistent text sizing */
+    p, div, span {
+        font-size: 14px !important;
+    }
+    
+    /* Success/Info boxes consistent sizing */
+    .stAlert {
+        font-size: 13px !important;
+        padding: 8px 12px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -263,8 +272,6 @@ st.pyplot(fig, clear_figure=True)
 if st.session_state.day < TOTAL_DAYS:
     progress = st.session_state.day / TOTAL_DAYS
     st.progress(progress, text=f"Growing... {int(progress * 100)}% complete")
-elif st.session_state.day >= TOTAL_DAYS and st.session_state.first_run_complete:
-    st.success("🌻 **Growth complete!** Perfect spiral achieved.")
 
 # ==========================================================
 # SLIDER (PLACED BELOW OUTPUT)
@@ -273,20 +280,20 @@ elif st.session_state.day >= TOTAL_DAYS and st.session_state.first_run_complete:
 # Show message after first run completes
 if st.session_state.first_run_complete and not st.session_state.angle_changed:
     st.success("✨ **Now try changing the angle below!**")
-    st.info("💡 Try 90°, 120°, or 145° to see gaps appear.", icon="💡")
+    st.info("💡 A small degree change can result in a large pattern shift.", icon="💡")
     st.markdown("#### 🎨 Adjust Angle")
 
 # Show slider only after first run is complete
 if st.session_state.first_run_complete:
     # Add quick preset buttons
-    st.markdown("<p style='font-size: 13px; margin-bottom: 4px;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 13px; margin-bottom: 4px; color: #333333;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
     preset_cols = st.columns(5)
     
     presets = [
         ("Golden", GOLDEN_ANGLE),
+        ("50°", 50.0),
         ("90°", 90.0),
-        ("120°", 120.0),
-        ("100°", 100.0),
+        ("90.25°", 90.25),
         ("145°", 145.0)
     ]
     
