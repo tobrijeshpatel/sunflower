@@ -137,25 +137,22 @@ st.markdown("---")
 
 if st.session_state.day >= TOTAL_DAYS:
 
-    # Initialize prompt flag
+    # Initialize flag
     if "prompt_shown" not in st.session_state:
         st.session_state.prompt_shown = False
 
-    # Show floating message ONLY once
+    # Show message only once
     if not st.session_state.prompt_shown:
+
         st.markdown("""
         <div style="
-            position: fixed;
-            top: 120px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            font-weight: 600;
-            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            padding: 18px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
             text-align: center;
+            font-weight: 600;
+            margin-bottom: 15px;
         ">
             Now change the angle ↓
         </div>
@@ -167,11 +164,10 @@ if st.session_state.day >= TOTAL_DAYS:
     if "angle" not in st.session_state:
         st.session_state.angle = GOLDEN_ANGLE
 
-    angle_value = st.slider(
+    st.slider(
         "Angle (°)",
         5.0,
         145.0,
-        value=st.session_state.angle,
         key="angle"
     )
 
