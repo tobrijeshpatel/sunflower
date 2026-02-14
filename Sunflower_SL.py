@@ -36,8 +36,8 @@ if "day" not in st.session_state:
     st.session_state.day = 0
 if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
-if "angle" not in st.session_state:
-    st.session_state.angle = GOLDEN_ANGLE
+#if "angle" not in st.session_state:
+ #   st.session_state.angle = GOLDEN_ANGLE
 
 # ---- Description
 st.markdown(
@@ -132,6 +132,7 @@ st.slider(
     "Angle (°)",
     5.0,
     145.0,
+    value=GOLDEN_ANGLE,
     key="angle"
 )
 
