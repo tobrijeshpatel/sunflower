@@ -92,7 +92,7 @@ ax.axis("off")
 
 # Corner Labels
 ax.text(-radius*0.95, radius*0.95,
-        f"Day {st.session_state.day} of {TOTAL_DAYS}"
+        f"Day {st.session_state.day} of {TOTAL_DAYS}",
         fontsize=14, fontweight="bold",
         alpha=0.6, verticalalignment="top")
 
