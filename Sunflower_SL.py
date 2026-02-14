@@ -87,6 +87,7 @@ with col2:
     
     if st.button(button_text, use_container_width=True, type="primary"):
         st.session_state.autoplay = not st.session_state.autoplay
+        st.rerun()
 
 st.markdown("<br>", unsafe_allow_html=True)
 
