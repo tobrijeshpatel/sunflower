@@ -130,6 +130,16 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 # ==========================================================
 
 st.markdown("---")
+
+# ---- Day Progress Slider (Visual Only)
+st.slider(
+    "Simulation Progress",
+    min_value=0,
+    max_value=TOTAL_DAYS,
+    value=st.session_state.day,
+    disabled=True
+)
+
 st.subheader("Adjust Angle")
 
 st.slider(
@@ -139,8 +149,22 @@ st.slider(
     key="angle"
 )
 
-if st.button("Restart Simulation"):
-    st.session_state.seeds = []
-    st.session_state.day = 0
-    st.session_state.autoplay = False
-    st.rerun()
+col1, col2 = st.columns(2)
+
+# ---- Restart Simulation (keeps angle, auto starts)
+with col1:
+    if st.button("Restart Simulation"):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = True   # 🔥 auto start
+        st.rerun()
+
+# ---- Reset All (golden angle, no auto start)
+with col2:
+    if st.button("Reset All"):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.session_state.angle = GOLDEN_ANGLE
+        st.rerun()
+
