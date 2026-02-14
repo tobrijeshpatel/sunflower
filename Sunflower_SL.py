@@ -5,30 +5,36 @@ import streamlit as st
 
 st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
-st.title("🌻 Seed Growth Visualization")
+# ==========================================================
+# TITLE + DESCRIPTION
+# ==========================================================
 
-# ==========================================================
-# Description (NOW directly below title)
-# ==========================================================
+st.title("🌻 Seed Growth Visualization")
 
 GOLDEN_ANGLE = 137.50776
 
 st.markdown(
     f"""
-Sunflower seeds naturally grow with an angle of **{GOLDEN_ANGLE:.1f}°** between each seed.
+Sunflower seeds naturally grow with an angle of **{GOLDEN_ANGLE:.1f}°** between each seed.  
 This special angle is called the **Golden Angle**, a pattern found throughout nature.
 
 Press **Play** to watch the seeds grow in this beautiful spiral pattern.
 """
 )
 
-# ---- Constants
+# ==========================================================
+# CONSTANTS
+# ==========================================================
+
 TOTAL_DAYS = 200
 SEED_GROWTH_RATE = 0.003
 BASE_RADIUS = 70
 SEEDS_PER_DAY = 15
 
-# ---- Session State Initialization
+# ==========================================================
+# SESSION STATE INITIALIZATION
+# ==========================================================
+
 if "seeds" not in st.session_state:
     st.session_state.seeds = []
 if "day" not in st.session_state:
@@ -41,16 +47,16 @@ if "angle_slider" not in st.session_state:
     st.session_state.angle_slider = GOLDEN_ANGLE
 
 # ==========================================================
-# Play Button
+# PLAY BUTTON
 # ==========================================================
 
-col1, col2, col3 = st.columns([1,2,1])
+col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     if st.button("▶ Play / Pause", use_container_width=True):
         st.session_state.autoplay = not st.session_state.autoplay
 
 # ==========================================================
-# Simulation Logic
+# SIMULATION ENGINE
 # ==========================================================
 
 def advance_day():
@@ -64,17 +70,19 @@ def advance_day():
 
     for i in range(len(st.session_state.seeds)):
         st.session_state.seeds[i][2] += 1
-        st.session_state.seeds[i][1] += SEED_GROWTH_RATE * st.session_state.seeds[i][2]
+        st.session_state.seeds[i][1] += (
+            SEED_GROWTH_RATE * st.session_state.seeds[i][2]
+        )
 
 if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     for _ in range(6):
         advance_day()
 
 # ==========================================================
-# Render Plot
+# RENDER PLOT (ALWAYS USES var_angle)
 # ==========================================================
 
-fig, ax = plt.subplots(figsize=(6,6))
+fig, ax = plt.subplots(figsize=(6, 6))
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
 
@@ -85,16 +93,26 @@ ax.set_ylim(-BASE_RADIUS, BASE_RADIUS)
 ax.set_aspect("equal")
 ax.axis("off")
 
-ax.text(-BASE_RADIUS*0.95, BASE_RADIUS*0.95,
-        f"Day {st.session_state.day} of {TOTAL_DAYS}",
-        fontsize=14, fontweight="bold",
-        alpha=0.6, verticalalignment="top")
+ax.text(
+    -BASE_RADIUS * 0.95,
+    BASE_RADIUS * 0.95,
+    f"Day {st.session_state.day} of {TOTAL_DAYS}",
+    fontsize=14,
+    fontweight="bold",
+    alpha=0.6,
+    verticalalignment="top",
+)
 
-ax.text(BASE_RADIUS*0.95, BASE_RADIUS*0.95,
-        f"{st.session_state.var_angle:.1f}°",
-        fontsize=14, fontweight="bold",
-        alpha=0.6, horizontalalignment="right",
-        verticalalignment="top")
+ax.text(
+    BASE_RADIUS * 0.95,
+    BASE_RADIUS * 0.95,
+    f"{st.session_state.var_angle:.1f}°",
+    fontsize=14,
+    fontweight="bold",
+    alpha=0.6,
+    horizontalalignment="right",
+    verticalalignment="top",
+)
 
 x, y, colors = [], [], []
 
@@ -114,7 +132,7 @@ ax.scatter(x, y, c=colors, s=14)
 st.pyplot(fig, clear_figure=True)
 
 # ==========================================================
-# Slider (NOW BELOW OUTPUT)
+# SLIDER (PLACED BELOW OUTPUT)
 # ==========================================================
 
 st.markdown("### Adjust Angle")
@@ -124,44 +142,11 @@ st.slider(
     5.0,
     145.0,
     value=st.session_state.angle_slider,
-    key="angle_slider"
+    key="angle_slider",
 )
 
 # ==========================================================
-# Auto rerun for animation
+# SLIDER SYNC LOGIC
 # ==========================================================
 
-if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
-    time.sleep(0.015)
-    st.rerun()
-
-# ==========================================================
-# Restart + Reset Controls
-# ==========================================================
-
-st.markdown("---")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    if st.button("Restart Simulation", use_container_width=True):
-        st.session_state.seeds = []
-        st.session_state.day = 0
-        st.session_state.autoplay = True
-
-        # Use slider value for simulation
-        st.session_state.var_angle = st.session_state.angle_slider
-
-        st.rerun()
-
-with col2:
-    if st.button("Reset All", use_container_width=True):
-        st.session_state.seeds = []
-        st.session_state.day = 0
-        st.session_state.autoplay = False
-
-        # Reset everything safely
-        st.session_state.var_angle = GOLDEN_ANGLE
-        st.session_state.angle_slider = GOLDEN_ANGLE
-
-        st.rerun()
+# Allow slider to up
