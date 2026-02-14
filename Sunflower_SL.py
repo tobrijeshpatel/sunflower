@@ -43,8 +43,6 @@ if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
 if "var_angle" not in st.session_state:
     st.session_state.var_angle = GOLDEN_ANGLE
-if "angle_slider" not in st.session_state:
-    st.session_state.angle_slider = GOLDEN_ANGLE
 
 # ==========================================================
 # PLAY BUTTON
@@ -137,16 +135,53 @@ st.pyplot(fig, clear_figure=True)
 
 st.markdown("### Adjust Angle")
 
-st.slider(
+# Use var_angle directly as the slider value
+angle_slider_value = st.slider(
     "Angle (°)",
     5.0,
     145.0,
-    value=st.session_state.angle_slider,
-    key="angle_slider",
+    value=st.session_state.var_angle,
+    key="angle_slider_input",
 )
 
 # ==========================================================
 # SLIDER SYNC LOGIC
 # ==========================================================
 
-# Allow slider to up
+# Update var_angle when slider changes and not autoplaying
+if not st.session_state.autoplay:
+    if angle_slider_value != st.session_state.var_angle:
+        st.session_state.var_angle = angle_slider_value
+        st.rerun()
+
+# ==========================================================
+# AUTO RERUN (ANIMATION)
+# ==========================================================
+
+if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
+    time.sleep(0.015)
+    st.rerun()
+
+# ==========================================================
+# RESTART + RESET
+# ==========================================================
+
+st.markdown("---")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("Restart Simulation", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = True
+        # Keep current angle from slider
+        st.rerun()
+
+with col2:
+    if st.button("Reset All", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.session_state.var_angle = GOLDEN_ANGLE
+        st.rerun()
