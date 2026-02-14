@@ -36,17 +36,8 @@ if "day" not in st.session_state:
     st.session_state.day = 0
 if "autoplay" not in st.session_state:
     st.session_state.autoplay = False
-if "show_prompt" not in st.session_state:
-    st.session_state.show_prompt = True
 if "angle" not in st.session_state:
     st.session_state.angle = GOLDEN_ANGLE
-if "reset_flag" not in st.session_state:
-    st.session_state.reset_flag = False
-
-# ---- Handle Reset Safely BEFORE Widgets Render
-if st.session_state.reset_flag:
-    st.session_state.angle = GOLDEN_ANGLE
-    st.session_state.reset_flag = False
 
 # ---- Description
 st.markdown(
@@ -130,40 +121,35 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
     st.rerun()
 
 # ==========================================================
-# Controls (Below Output)
+# Controls (Always Visible)
 # ==========================================================
 
-if st.session_state.day >= TOTAL_DAYS:
+st.markdown("---")
+st.markdown("#### Adjust Angle")
 
-    st.markdown("---")
+# Slider owns its own state
+st.slider(
+    "Angle (°)",
+    5.0,
+    145.0,
+    key="angle"
+)
 
-    if st.session_state.show_prompt:
-        st.success("Now change the angle ↓")
+col1, col2 = st.columns(2)
 
-    col1, col2 = st.columns(2)
+# Restart (does NOT touch angle)
+with col1:
+    if st.button("Restart Simulation", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = True
+        st.rerun()
 
-    with col1:
-        if st.button("Restart Simulation", use_container_width=True):
-            st.session_state.seeds = []
-            st.session_state.day = 0
-            st.session_state.autoplay = True
-            st.session_state.show_prompt = False
-            st.rerun()
-
-    with col2:
-        if st.button("Reset All", use_container_width=True):
-            st.session_state.seeds = []
-            st.session_state.day = 0
-            st.session_state.autoplay = False
-            st.session_state.show_prompt = False
-            st.session_state.reset_flag = True
-            st.rerun()
-
-    st.markdown("#### Adjust Angle")
-
-    st.slider(
-        "Angle (°)",
-        5.0,
-        145.0,
-        key="angle"
-    )
+# Reset (resets angle safely BEFORE rerun)
+with col2:
+    if st.button("Reset All", use_container_width=True):
+        st.session_state.seeds = []
+        st.session_state.day = 0
+        st.session_state.autoplay = False
+        st.session_state.angle = GOLDEN_ANGLE
+        st.rerun()
