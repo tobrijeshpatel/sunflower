@@ -77,12 +77,17 @@ st.markdown("""
     
     /* Reduce spacing between elements */
     .element-container {
-        margin-bottom: 0.5rem !important;
+        margin-bottom: 0.3rem !important;
+    }
+    
+    /* Reduce gap after buttons specifically */
+    .stButton {
+        margin-bottom: 0.2rem !important;
     }
     
     /* Consistent typography */
     h1 {
-        font-size: 32px !important;
+        font-size: 36px !important;
         margin-bottom: 0.5rem !important;
         font-weight: 700 !important;
     }
@@ -231,17 +236,6 @@ ax.text(
     verticalalignment="top",
 )
 
-# Add seed count
-ax.text(
-    0,
-    -BASE_RADIUS * 0.95,
-    f"Seeds: {len(st.session_state.seeds)}",
-    fontsize=12,
-    alpha=0.6,
-    horizontalalignment="center",
-    verticalalignment="bottom",
-)
-
 x, y, colors = [], [], []
 
 for n, r, age in st.session_state.seeds:
@@ -278,14 +272,13 @@ if st.session_state.first_run_complete and not st.session_state.angle_changed:
 if st.session_state.first_run_complete:
     # Add quick preset buttons
     st.markdown("<p style='font-size: 13px; margin-bottom: 4px; color: #333333;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
-    preset_cols = st.columns(5)
+    preset_cols = st.columns(4)
     
     presets = [
         ("Golden", GOLDEN_ANGLE),
-        ("45°", 45.0),
+        ("45.5°", 45.5),
         ("90°", 90.0),
-        ("90.25°", 90.25),
-        ("145°", 145.0)
+        ("90.25°", 90.25)
     ]
     
     for idx, (label, angle) in enumerate(presets):
