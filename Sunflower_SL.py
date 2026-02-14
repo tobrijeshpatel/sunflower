@@ -11,13 +11,20 @@ st.set_page_config(page_title="Seed Growth Visualization", layout="centered")
 
 st.markdown("""
     <style>
+    /* Reduce overall padding */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 1rem;
+    }
+    
     /* Make primary buttons (Play/Pause) yellow */
     div[data-testid="column"] > div > div > div > button[kind="primary"] {
         background-color: #FFD700 !important;
         color: #000000 !important;
         border: none !important;
         font-weight: 600 !important;
-        font-size: 16px !important;
+        font-size: 15px !important;
+        padding: 8px 16px !important;
     }
     div[data-testid="column"] > div > div > div > button[kind="primary"]:hover {
         background-color: #FFC700 !important;
@@ -30,22 +37,60 @@ st.markdown("""
         color: #000000 !important;
         border: none !important;
         font-weight: 600 !important;
+        font-size: 14px !important;
+        padding: 6px 12px !important;
     }
     div[data-testid="column"] > div > div > div > button[kind="secondary"]:hover {
         background-color: #FFC700 !important;
         color: #000000 !important;
     }
     
-    /* Style preset buttons with a lighter color */
+    /* Style preset buttons with a lighter color and smaller size */
     button[kind="secondary"] {
         background-color: #FFFACD !important;
         color: #000000 !important;
         border: 1px solid #FFD700 !important;
-        font-size: 12px !important;
-        padding: 4px 8px !important;
+        font-size: 11px !important;
+        padding: 4px 6px !important;
+        min-height: 32px !important;
     }
     button[kind="secondary"]:hover {
         background-color: #FFD700 !important;
+    }
+    
+    /* Compact spacing for mobile */
+    @media (max-width: 768px) {
+        .block-container {
+            padding-top: 1rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        button[kind="secondary"] {
+            font-size: 10px !important;
+            padding: 3px 4px !important;
+            min-height: 28px !important;
+        }
+        
+        div[data-testid="column"] > div > div > div > button[kind="primary"],
+        div[data-testid="column"] > div > div > div > button[kind="secondary"] {
+            font-size: 13px !important;
+            padding: 6px 10px !important;
+        }
+    }
+    
+    /* Reduce spacing between elements */
+    .element-container {
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Compact headers */
+    h1 {
+        margin-bottom: 0.5rem !important;
+    }
+    h4 {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -60,19 +105,13 @@ GOLDEN_ANGLE = 137.50776
 
 st.markdown(
     f"""
-    <div style='background-color: #FFF8DC; padding: 20px; border-radius: 10px; border-left: 5px solid #FFD700;'>
-    <h3 style='margin-top: 0;'>Discover Nature's Hidden Math! 🔍</h3>
-    <p>Sunflower seeds naturally grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed.  
-    This special angle is called the <strong>Golden Angle</strong> — a mathematical pattern found throughout nature in pinecones, pineapples, and flower petals.</p>
-    
-    <p><strong>Why this angle?</strong> It allows seeds to pack most efficiently, with no gaps or overlaps!</p>
-    
-    <p>📌 <em>Press <strong>Play</strong> below and watch the magic unfold...</em></p>
+    <div style='background-color: #FFF8DC; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 10px;'>
+    <p style='margin: 0 0 8px 0; font-size: 14px; color: #333333;'><strong>Discover Nature's Hidden Math!</strong> 🔍</p>
+    <p style='margin: 0 0 8px 0; font-size: 13px; color: #444444;'>Sunflower seeds grow with an angle of <strong>{GOLDEN_ANGLE:.1f}°</strong> between each seed — the <strong>Golden Angle</strong> that allows perfect packing with no gaps!</p>
+    <p style='margin: 0; font-size: 12px; color: #555555;'><em>Press <strong>Play</strong> and watch the magic unfold...</em></p>
     </div>
     """, unsafe_allow_html=True
 )
-
-st.markdown("")
 
 # ==========================================================
 # CONSTANTS
@@ -105,8 +144,6 @@ if "restarted_once" not in st.session_state:
 # ==========================================================
 # PLAY BUTTON
 # ==========================================================
-
-st.markdown("<br>", unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
@@ -162,7 +199,7 @@ if st.session_state.day >= TOTAL_DAYS and not st.session_state.first_run_complet
 # RENDER PLOT (ALWAYS USES var_angle)
 # ==========================================================
 
-fig, ax = plt.subplots(figsize=(6, 6))
+fig, ax = plt.subplots(figsize=(5, 5))
 fig.patch.set_facecolor("gold")
 ax.set_facecolor("gold")
 
@@ -235,14 +272,14 @@ elif st.session_state.day >= TOTAL_DAYS and st.session_state.first_run_complete:
 
 # Show message after first run completes
 if st.session_state.first_run_complete and not st.session_state.angle_changed:
-    st.success("✨ **Amazing, right?** Now try changing the angle below and see how the pattern transforms!")
-    st.info("💡 **Pro tip:** Try angles like 90°, 120°, or 145° to see dramatically different patterns. Notice how gaps appear when you move away from the golden angle!")
-    st.markdown("### 🎨 Adjust Angle")
+    st.success("✨ **Now try changing the angle below!**")
+    st.info("💡 Try 90°, 120°, or 145° to see gaps appear.", icon="💡")
+    st.markdown("#### 🎨 Adjust Angle")
 
 # Show slider only after first run is complete
 if st.session_state.first_run_complete:
     # Add quick preset buttons
-    st.markdown("**🎯 Quick Presets:** Try these interesting angles!")
+    st.markdown("<p style='font-size: 13px; margin-bottom: 4px;'><strong>🎯 Quick Presets:</strong></p>", unsafe_allow_html=True)
     preset_cols = st.columns(5)
     
     presets = [
@@ -259,8 +296,6 @@ if st.session_state.first_run_complete:
                 st.session_state.var_angle = angle
                 st.session_state.angle_changed = True
                 st.rerun()
-    
-    st.markdown("")
     
     # Slider without a key - directly bound to var_angle
     # This allows it to reset properly when var_angle changes
@@ -288,8 +323,6 @@ if st.session_state.autoplay and st.session_state.day < TOTAL_DAYS:
 # ==========================================================
 # RESTART + RESET
 # ==========================================================
-
-st.markdown("---")
 
 col1, col2 = st.columns(2)
 
