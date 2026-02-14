@@ -134,13 +134,13 @@ st.markdown(
 )
 
 # Simple info card (can be removed if not needed)
-st.markdown(
-    """
-    <div style='background-color: #FFF8DC; padding: 10px 14px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 8px;'>
-    <p style='margin: 0; font-size: 13px; color: #333333;'>Watch how nature uses mathematics to create perfect spirals!</p>
-    </div>
-    """, unsafe_allow_html=True
-)
+##st.markdown(
+  ##  """
+   ## <div style='background-color: #FFF8DC; padding: 10px 14px; border-radius: 8px; border-left: 4px solid #FFD700; margin-bottom: 8px;'>
+   ## <p style='margin: 0; font-size: 13px; color: #333333;'>Watch how nature uses mathematics to create perfect spirals!</p>
+   ## </div>
+   ## """, unsafe_allow_html=True
+##)
 
 # ==========================================================
 # CONSTANTS
