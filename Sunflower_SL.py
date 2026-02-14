@@ -135,24 +135,14 @@ st.pyplot(fig, clear_figure=True)
 
 st.markdown("### Adjust Angle")
 
-# Use var_angle directly as the slider value
-angle_slider_value = st.slider(
+# Slider directly controls var_angle
+st.session_state.var_angle = st.slider(
     "Angle (°)",
     5.0,
     145.0,
     value=st.session_state.var_angle,
     key="angle_slider_input",
 )
-
-# ==========================================================
-# SLIDER SYNC LOGIC
-# ==========================================================
-
-# Update var_angle when slider changes and not autoplaying
-if not st.session_state.autoplay:
-    if angle_slider_value != st.session_state.var_angle:
-        st.session_state.var_angle = angle_slider_value
-        st.rerun()
 
 # ==========================================================
 # AUTO RERUN (ANIMATION)
@@ -180,6 +170,10 @@ with col1:
 
 with col2:
     if st.button("Reset All", use_container_width=True):
+        # Clear all session state to force a fresh reset
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        # Reinitialize with golden angle
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = False
