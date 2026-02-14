@@ -44,7 +44,7 @@ with st.sidebar:
     zoom_option = st.radio(
         "Zoom",
         options=["1x", "10x", "1200x"],
-        index=0  # default = 1x
+        index=0
     )
 
     zoom = {"1x": 1, "10x": 10, "1200x": 1200}[zoom_option]
@@ -67,7 +67,7 @@ with st.sidebar:
 
     st.session_state.autoplay = st.toggle("Play / Pause", value=st.session_state.autoplay)
 
-# ---- Single-line Description (Professional & Clean)
+# ---- Description
 st.markdown(
     f"Seeds grow using the golden angle ({GOLDEN_ANGLE:.5f}°), a pattern found throughout nature. "
     "Even a small change in this angle dramatically alters the structure — try adjusting it and observe how the pattern transforms."
@@ -115,6 +115,26 @@ ax.set_ylim(-radius, radius)
 ax.set_aspect("equal")
 ax.axis("off")
 
+# 🔥 ADD THESE TWO LINES (Corner Labels)
+
+ax.text(
+    -radius * 0.95,
+    radius * 0.95,
+    f"Day {st.session_state.day}",
+    fontsize=12,
+    verticalalignment="top"
+)
+
+ax.text(
+    radius * 0.95,
+    radius * 0.95,
+    f"{st.session_state.angle:.1f}°",
+    fontsize=12,
+    horizontalalignment="right",
+    verticalalignment="top"
+)
+
+# ---- Plot Seeds
 x, y = [], []
 colors = []
 
