@@ -48,25 +48,17 @@ if "var_angle" not in st.session_state:
 # PLAY BUTTON
 # ==========================================================
 
+st.markdown("<br>", unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
-    if st.button("▶ Play / Pause", use_container_width=True):
+    button_emoji = "⏸️" if st.session_state.autoplay else "▶️"
+    button_text = f"{button_emoji} {'Pause' if st.session_state.autoplay else 'Play'}"
+    
+    if st.button(button_text, use_container_width=True, type="primary"):
         st.session_state.autoplay = not st.session_state.autoplay
 
-# ==========================================================
-# SLIDER (PLACED BEFORE SIMULATION)
-# ==========================================================
-
-st.markdown("### Adjust Angle")
-
-# Slider directly controls var_angle - placed BEFORE rendering
-st.session_state.var_angle = st.slider(
-    "Angle (°)",
-    5.0,
-    145.0,
-    value=st.session_state.var_angle,
-    key="angle_slider_input",
-)
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ==========================================================
 # SIMULATION ENGINE
@@ -145,6 +137,26 @@ ax.scatter(x, y, c=colors, s=14)
 st.pyplot(fig, clear_figure=True)
 
 # ==========================================================
+# SLIDER (PLACED BELOW OUTPUT)
+# ==========================================================
+
+st.markdown("### 🎨 Adjust Angle")
+
+# Get slider value
+new_angle = st.slider(
+    "Angle (°)",
+    5.0,
+    145.0,
+    value=st.session_state.var_angle,
+    key="angle_slider_input",
+)
+
+# Update var_angle if slider changed
+if new_angle != st.session_state.var_angle:
+    st.session_state.var_angle = new_angle
+    st.rerun()
+
+# ==========================================================
 # AUTO RERUN (ANIMATION)
 # ==========================================================
 
@@ -161,7 +173,7 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button("Restart Simulation", use_container_width=True):
+    if st.button("🔄 Restart Simulation", use_container_width=True, type="secondary"):
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = True
@@ -169,12 +181,13 @@ with col1:
         st.rerun()
 
 with col2:
-    if st.button("Reset All", use_container_width=True):
-        # Delete the slider key specifically to force it to reset
-        if "angle_slider_input" in st.session_state:
-            del st.session_state["angle_slider_input"]
+    if st.button("🏠 Reset All", use_container_width=True, type="secondary"):
+        # Clear the slider widget state completely
+        keys_to_delete = [k for k in st.session_state.keys()]
+        for key in keys_to_delete:
+            del st.session_state[key]
         
-        # Reset all other values
+        # Reinitialize everything
         st.session_state.seeds = []
         st.session_state.day = 0
         st.session_state.autoplay = False
